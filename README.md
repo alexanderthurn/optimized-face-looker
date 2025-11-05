@@ -2,10 +2,8 @@
 
 Create an interactive, circular profile picture that “looks” toward your mouse/finger. Frames are generated with Replicate, then packed into a tiled atlas and displayed efficiently in the browser.
 
-
 <div align="center">
-
-<table>
+<table border="0">
 <tr>
  <td><img src="in/my_face.jpg" alt="Input" height="256" /></td>
  <td align="center" style="padding: 0 12px; font-size: 28px; vertical-align: middle;">→</td>
@@ -14,10 +12,12 @@ Create an interactive, circular profile picture that “looks” toward your mou
  <td><img src="misc/anim-face.gif" alt="Demo GIF placeholder" height="256" /></td>
 </tr>
 </table>
-
 </div>
 
 This is an optimized version: instead of shipping many individual images, it generates one large tiled JPG atlas plus a tiny JSON manifest. Fewer requests and better compression make page loads significantly faster.
+
+[Live Demo](https://alexanderthurn.github.io/optimized-face-looker/)
+
 
 ## Requirements
 
@@ -71,11 +71,6 @@ Start a simple dev server (recommended) from project root:
 python3 -m http.server 8000
 # then visit http://localhost:8000/viewer/
 ```
-
-Or view on GitHub Pages (if enabled for this repo):
-
-- Optimized (atlas): https://alexanderthurn.github.io/optimized-face-looker/
-  (Only the optimized viewer is deployed, served from viewer/index.html.)
 
 ### Controls and mapping
 - Move the mouse (or drag your finger) anywhere on the page; the face rotates to the nearest available frame.
