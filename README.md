@@ -7,7 +7,7 @@ Create an interactive, circular profile picture that “looks” toward your mou
 <tr>
  <td><img src="in/my_face.jpg" alt="Input" height="256" /></td>
  <td align="center" style="padding: 0 12px; font-size: 28px; vertical-align: middle;">→</td>
- <td><img src="viewer/anim-face.jpg" alt="Combined atlas preview" height="256" /></td>
+ <td><img src="misc/anim-face.jpg" alt="Combined atlas preview" height="256" /></td>
  <td align="center" style="padding: 0 12px; font-size: 28px; vertical-align: middle;">→</td>
  <td><img src="misc/anim-face.gif" alt="Demo GIF placeholder" height="256" /></td>
 </tr>
@@ -50,7 +50,7 @@ python3 main.py generate --step 30
 
 ### 2) Build optimized atlas (tiled)
 Packs all generated frames into one atlas. You can:
-- limit the overall atlas width with `--max-width` (default 256)
+- limit the overall atlas width with `--max-width` (default 2048)
 - scale each tile (frame) with `--tile-width` (e.g., 128 to make each tile 128px wide; height is scaled proportionally)
 The manifest includes sections for each input (prefix):
 ```bash
@@ -124,6 +124,22 @@ MIT - feel free to use in personal and commercial projects!
 ## Optional: Modify portrait with Gemini
 
 Create a stylized variant of `in/my_face.jpg` using Google's Gemini, while keeping facial features unchanged. The result is saved as a JPEG in `in/my_face_{postfix}.jpg`.
+
+<div align="center">
+<table border="0">
+<tr>
+ <td align="center">
+ <img src="in/my_face.jpg" alt="Default input" height="128" /><br/>
+ <img src="in/my_face_cowboy.jpg" alt="Cowboy style" height="64" /><br/>
+ <img src="in/my_face_hippie.jpg" alt="Hippie style" height="64" /><br/>
+ </td>
+ <td align="center" style="padding: 0 12px; font-size: 28px; vertical-align: middle;">→</td>
+ <td align="center"><img src="misc/anim-face-multi.jpg" alt="Multi-expression demo" height="128" /></td>
+ <td align="center" style="padding: 0 12px; font-size: 28px; vertical-align: middle;">→</td>
+ <td align="center"><img src="misc/anim-face-multi.gif" alt="Multi-expression demo" height="128" /></td>
+</tr>
+</table>
+</div>
 
 Requirements:
 - Google AI Studio API key (`GOOGLE_API_KEY` environment variable)
