@@ -110,3 +110,32 @@ optimize.py
 ## License
 
 MIT - feel free to use in personal and commercial projects!
+ 
+## Optional: Modify portrait with Gemini
+
+Create a stylized variant of `in/my_face.jpg` using Google's Gemini, while keeping facial features unchanged. The result is saved as a JPEG in `in/my_face_{postfix}.jpg`.
+
+Requirements:
+- Google AI Studio API key (`GOOGLE_API_KEY` environment variable)
+- Python packages: `google-genai`, `Pillow`
+
+Install (once):
+```bash
+pip install google-genai Pillow
+```
+
+Default (style: "make him look like a hippie", postfix `2`):
+```bash
+python3 misc/gemini_modify.py
+# writes in/my_face_2.jpg
+```
+
+Custom style and postfix (pass postfix without the underscore):
+```bash
+python3 misc/gemini_modify.py --style "make him look like a cowboy" --postfix 3
+# writes in/my_face_3.jpg
+```
+
+Notes:
+- Postfix is normalized to start with a single underscore (e.g., `--postfix 7` → `my_face_7.jpg`).
+- Output is always saved as JPEG.
