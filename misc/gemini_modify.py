@@ -35,7 +35,7 @@ output_path = project_root / "in" / f"my_face{postfix}.jpg"
 
 # Base image prompt: "A photorealistic picture of a fluffy ginger cat sitting on a wooden floor, looking directly at the camera. Soft, natural light from a window."
 image_input = Image.open(input_path)
-text_input = f"""Using the provided image of a portrait of a person, {style_clause}. Ensure the person's face and features remain completely unchanged. Preserve the ratio and stuff. The background has to be white"""
+text_input = f"""Using the provided image of a portrait of a person, {style_clause}. Ensure the person's face and features remain completely unchanged in size, proportion, and position. Do not zoom out or crop differently. Keep the same framing and face scale as the original. Keep the exact same camera distance and composition. The background must remain be white."""
 
 # Generate an image from a text prompt
 response = client.models.generate_content(
