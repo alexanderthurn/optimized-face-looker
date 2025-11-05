@@ -1,15 +1,20 @@
 ## Optimized Face Looker 👁️
 
-![Demo GIF placeholder](misc/anim-face.gif)
-
 Create an interactive, circular profile picture that “looks” toward your mouse/finger. Frames are generated with Replicate, then packed into a tiled atlas and displayed efficiently in the browser.
 
+
+<div align="center">
+
+<table>
+<tr>
+<td><img src="misc/anim-face.gif" alt="Demo GIF placeholder" height="512" /></td>
+<td><img src="viewer/anim-face.jpg" alt="Combined atlas preview" height="512" /></td>
+</tr>
+</table>
+
+</div>
+
 This is an optimized version: instead of shipping many individual images, it generates one large tiled JPG atlas plus a tiny JSON manifest. Fewer requests and better compression make page loads significantly faster.
-
-Combined atlas preview (appears after you run the optimize step):
-
-![Combined atlas](viewer/anim-face.jpg)
-
 
 ## Requirements
 
@@ -85,7 +90,7 @@ in/
 out/
   0.jpg, 30.jpg, ... 330.jpg
 viewer/
-  anim-face.html
+  index.html
   anim-face.jpg
   anim-face.json
 main.py
