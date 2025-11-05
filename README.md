@@ -129,14 +129,14 @@ Create a stylized variant of `in/my_face.jpg` using Google's Gemini, while keepi
 <table border="0">
 <tr>
  <td align="center">
- <img src="in/my_face.jpg" alt="Default input" height="128" /><br/>
+ <img src="in/my_face.jpg" alt="Default input" height="64" /><br/>
  <img src="in/my_face_cowboy.jpg" alt="Cowboy style" height="64" /><br/>
  <img src="in/my_face_hippie.jpg" alt="Hippie style" height="64" /><br/>
  </td>
  <td align="center" style="padding: 0 12px; font-size: 28px; vertical-align: middle;">→</td>
- <td align="center"><img src="misc/anim-face-multi.jpg" alt="Multi-expression demo" height="128" /></td>
+ <td align="center"><img src="misc/anim-face-multi.jpg" alt="Multi-expression demo" height="192" /></td>
  <td align="center" style="padding: 0 12px; font-size: 28px; vertical-align: middle;">→</td>
- <td align="center"><img src="misc/anim-face-multi.gif" alt="Multi-expression demo" height="128" /></td>
+ <td align="center"><img src="misc/anim-face-multi.gif" alt="Multi-expression demo" height="192" /></td>
 </tr>
 </table>
 </div>
