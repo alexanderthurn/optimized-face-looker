@@ -37,7 +37,7 @@ Set your Replicate token:
 export REPLICATE_API_TOKEN=your_token_here
 ```
 
-Put your input image at `in/my_face.jpg` (512×512 recommended).
+Put your input images in `in/` (512×512 recommended), e.g. `my_face.jpg`, `my_face_cowboy.jpg`, `my_face_hippie.jpg`.
 
 ## Usage
 
