@@ -10,6 +10,9 @@
       margin: 0;
       background: #ffffff;
       color: #000000;
+      overflow: hidden; /* prevent scrolling */
+      overscroll-behavior: none; /* prevent bounce/refresh */
+      touch-action: none; /* disable default touch gestures */
     }
 
     .center {
@@ -34,7 +37,7 @@
       width: 25vw;
       max-width: 256px;
       height: auto;
-      aspect-ratio: 1 / 1;
+      aspect-ratio: 1 / 1; /* ensure square */
       border-radius: 50%;
       border: 3px solid #cccccc;
       background: #f7f7f7;
@@ -148,16 +151,28 @@
 
           // Whole-page listeners for smooth interaction
           window.addEventListener("mousemove", (e) => handlePointer(e.clientX, e.clientY));
-          window.addEventListener(
-            "touchmove",
-            (e) => {
-              if (e.touches && e.touches.length > 0) {
-                const t = e.touches[0];
-                handlePointer(t.clientX, t.clientY);
-              }
-            },
-            { passive: true }
-          );
+      window.addEventListener(
+        "touchstart",
+        (e) => {
+          if (e.touches && e.touches.length > 0) {
+            e.preventDefault();
+            const t = e.touches[0];
+            handlePointer(t.clientX, t.clientY);
+          }
+        },
+        { passive: false }
+      );
+      window.addEventListener(
+        "touchmove",
+        (e) => {
+          if (e.touches && e.touches.length > 0) {
+            e.preventDefault();
+            const t = e.touches[0];
+            handlePointer(t.clientX, t.clientY);
+          }
+        },
+        { passive: false }
+      );
         };
       });
   </script>
