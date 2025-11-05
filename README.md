@@ -10,7 +10,6 @@ Combined atlas preview (appears after you run the optimize step):
 
 ![Combined atlas](viewer/anim-face.jpg)
 
-Inspiration: This project was inspired by the great work in `https://github.com/kylan02/face_looker`. Huge thanks for the  idea and approach.
 
 ## Requirements
 
@@ -100,9 +99,11 @@ optimize.py
 
 ## 🙏 Credits
 
+- Inspiration: This project is based on the great work of [kylan02](https://github.com/kylan02/face_looker). Huge thanks for the idea and approach.
 - Face generation powered by [Replicate](https://replicate.com/)
 - Uses [fofr/expression-editor](https://replicate.com/fofr/expression-editor) model
 - Created with ❤️ by Open Source Fans
 
 ## License
+
 MIT - feel free to use in personal and commercial projects!
