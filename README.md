@@ -7,8 +7,11 @@ Create an interactive, circular profile picture that “looks” toward your mou
 
 <table>
 <tr>
-<td><img src="misc/anim-face.gif" alt="Demo GIF placeholder" height="512" /></td>
-<td><img src="viewer/anim-face.jpg" alt="Combined atlas preview" height="512" /></td>
+ <td><img src="in/my_face.jpg" alt="Input" height="256" /></td>
+ <td align="center" style="padding: 0 12px; font-size: 28px; vertical-align: middle;">→</td>
+ <td><img src="viewer/anim-face.jpg" alt="Combined atlas preview" height="256" /></td>
+ <td align="center" style="padding: 0 12px; font-size: 28px; vertical-align: middle;">→</td>
+ <td><img src="misc/anim-face.gif" alt="Demo GIF placeholder" height="256" /></td>
 </tr>
 </table>
 
