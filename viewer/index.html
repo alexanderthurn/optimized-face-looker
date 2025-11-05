@@ -139,6 +139,7 @@
           canvas.height = frameHeight;
 
           // Draw initial frame (0°)
+          let currentAngleDeg = 0;
           drawFrame(0);
 
           // Build section buttons
@@ -151,7 +152,8 @@
               if (i === currentSectionIndex) b.classList.add("active");
               else b.classList.remove("active");
             });
-            drawFrame(0);
+            // Redraw at the last viewed angle for continuity
+            drawFrameByAngle(currentAngleDeg);
           }
           sections.forEach((sec, idx) => {
             const btn = document.createElement("button");
@@ -207,7 +209,8 @@
 
           function handlePointer(clientX, clientY) {
             const deg = angleFromCenter(clientX, clientY);
-            drawFrameByAngle(deg);
+            currentAngleDeg = deg;
+            drawFrameByAngle(currentAngleDeg);
           }
 
           // Whole-page listeners for smooth interaction
