@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import io, os, sys, argparse, math
+import io, os, sys, subprocess, argparse, math
 from pathlib import Path
 import replicate, requests
 from PIL import Image
@@ -52,16 +52,13 @@ def save_as_jpg(raw: bytes, dest: Path):
     dest.parent.mkdir(parents=True, exist_ok=True)
     img.save(dest, format="JPEG", quality=95, optimize=True)
 
-def main():
-    parser = argparse.ArgumentParser(description="360° pupil sweep (JPG, no resize).")
-    parser.add_argument("--step", type=int, default=30, help="Grad-Schrittweite (1–360, Standard 10)")
-    args = parser.parse_args()
-    if args.step <= 0 or args.step > 360:
+def generate_frames(step: int):
+    if step <= 0 or step > 360:
         print("ERROR: --step muss 1..360 sein.", file=sys.stderr)
         sys.exit(1)
 
     ensure_env()
-    angles = list(range(0, 360, args.step))
+    angles = list(range(0, 360, step))
 
     print("initializing model… please wait (first call may take up to ~30s)")
 
@@ -97,6 +94,44 @@ def main():
             print(f"[error] {deg}°: {e}", file=sys.stderr)
 
     print(f"Done. Files in: {OUT_DIR.resolve()}")
+
+def run_optimize(step: int, max_width: int):
+    # Delegate to optimize.py to keep logic there
+    optimize_path = (Path(__file__).parent / "optimize.py").resolve()
+    cmd = [sys.executable, str(optimize_path), "--step", str(step), "--max-width", str(max_width)]
+    print(f"[run] {' '.join(cmd)}")
+    try:
+        subprocess.check_call(cmd)
+    except subprocess.CalledProcessError as e:
+        print(f"ERROR: optimize failed with code {e.returncode}", file=sys.stderr)
+        sys.exit(e.returncode)
+
+def main():
+    parser = argparse.ArgumentParser(description="Face Looker - generate frames and optimize into an atlas")
+    sub = parser.add_subparsers(dest="command", required=True)
+
+    p_gen = sub.add_parser("generate", help="Generate JPG frames into ./out")
+    p_gen.add_argument("--step", type=int, default=30, help="Grad-Schrittweite (1–360, Standard 30)")
+
+    p_opt = sub.add_parser("optimize", help="Build tiled atlas (delegates to optimize.py)")
+    p_opt.add_argument("--step", type=int, default=30, help="Grad-Schrittweite (1–360, Standard 30)")
+    p_opt.add_argument("--max-width", type=int, default=256, help="Maximale Atlasbreite in Pixel (Standard 256)")
+
+    p_all = sub.add_parser("all", help="Generate frames and then optimize into atlas")
+    p_all.add_argument("--step", type=int, default=30, help="Grad-Schrittweite (1–360, Standard 30)")
+    p_all.add_argument("--max-width", type=int, default=256, help="Maximale Atlasbreite in Pixel (Standard 256)")
+
+    args = parser.parse_args()
+
+    if args.command == "generate":
+        generate_frames(step=args.step)
+    elif args.command == "optimize":
+        run_optimize(step=args.step, max_width=args.__dict__["max_width"])
+    elif args.command == "all":
+        generate_frames(step=args.step)
+        run_optimize(step=args.step, max_width=args.__dict__["max_width"])
+    else:
+        parser.error("Unknown command")
 
 if __name__ == "__main__":
     main()
