@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Face Looker</title>
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      background: #ffffff;
+      color: #000000;
+    }
+
+    .center {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .viewer {
+      position: relative;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    img {
+      display: block;
+      width: 25vw;
+      max-width: 512px;
+      height: auto;
+      aspect-ratio: 1 / 1;
+      object-fit: cover;
+      border-radius: 50%;
+      border: 3px solid #cccccc;
+    }
+
+    .hint {
+      width: 25vw;
+      max-width: 512px;
+      margin-top: 1rem;
+      margin-left: auto;
+      margin-right: auto;
+      text-align: center;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, sans-serif;
+      font-size: 0.9rem;
+      color: #444;
+    }
+  </style>
+  </head>
+  <body>
+    <div class="center">
+      <div class="viewer" id="viewer">
+        <img id="faceImage" src="../out/0.jpg" alt="Face view" draggable="false" />
+        <div class="hint">Move mouse or drag finger to rotate</div>
+      </div>
+    </div>
+
+    <script>
+      // Configuration: set the angle step between frames (e.g., 90 will use 0,90,180,270)
+      const STEP_WIDTH = 30; // degrees
+      const IMAGE_PATH_PREFIX = "../out/"; // relative to this HTML file
+      const IMAGE_EXTENSION = ".jpg";
+
+      const img = document.getElementById("faceImage");
+      const viewer = document.getElementById("viewer");
+
+      // Build list of angles based on the step width
+      const availableAngles = [];
+      for (let a = 0; a < 360; a += STEP_WIDTH) {
+        availableAngles.push(a);
+      }
+
+      // Preload images for smoother experience
+      availableAngles.forEach((a) => {
+        const preload = new Image();
+        preload.src = IMAGE_PATH_PREFIX + a + IMAGE_EXTENSION;
+      });
+
+      function angleFromCenter(clientX, clientY) {
+        const rect = img.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        const dx = clientX - centerX;
+        const dy = centerY - clientY; // invert Y so positive is up
+
+        let deg = Math.atan2(dy, dx) * (180 / Math.PI); // -180..180, 0=right, 90=up
+        if (deg < 0) deg += 360; // 0..360
+        return deg;
+      }
+
+      function nearestAvailableAngle(deg) {
+        // Snap to nearest multiple of STEP_WIDTH, normalize to [0, 360)
+        const snapped = Math.round(deg / STEP_WIDTH) * STEP_WIDTH;
+        const normalized = ((snapped % 360) + 360) % 360;
+        return normalized;
+      }
+
+      function updateImageForAngle(deg) {
+        const angle = nearestAvailableAngle(deg);
+        const nextSrc = IMAGE_PATH_PREFIX + angle + IMAGE_EXTENSION;
+        if (img.getAttribute("src") !== nextSrc) {
+          img.setAttribute("src", nextSrc);
+        }
+      }
+
+      function handlePointer(clientX, clientY) {
+        const deg = angleFromCenter(clientX, clientY);
+        updateImageForAngle(deg);
+      }
+
+      // Mouse support across the whole page
+      window.addEventListener("mousemove", (e) => {
+        handlePointer(e.clientX, e.clientY);
+      });
+
+      // Touch support across the whole page
+      window.addEventListener(
+        "touchmove",
+        (e) => {
+          if (e.touches && e.touches.length > 0) {
+            const t = e.touches[0];
+            handlePointer(t.clientX, t.clientY);
+          }
+        },
+        { passive: true }
+      );
+
+      // Prevent default drag ghost image
+      img.addEventListener("dragstart", (e) => e.preventDefault());
+    </script>
+  </body>
+</html>
+
+
