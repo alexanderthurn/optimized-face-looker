@@ -57,13 +57,18 @@ python3 main.py all --step 30 --max-width 2048
 
 ### View in the browser
 Open the viewer page:
-- `viewer/anim-face.html`
+- `viewer/index.html`
 
 Start a simple dev server (recommended) from project root:
 ```bash
 python3 -m http.server 8000
-# then visit http://localhost:8000/viewer/anim-face.html
+# then visit http://localhost:8000/viewer/
 ```
+
+Or view on GitHub Pages (if enabled for this repo):
+
+- Optimized (atlas): https://alexanderthurn.github.io/optimized-face-looker/
+  (Only the optimized viewer is deployed, served from viewer/index.html.)
 
 ### Controls and mapping
 - Move the mouse (or drag your finger) anywhere on the page; the face rotates to the nearest available frame.
@@ -92,6 +97,12 @@ optimize.py
 - Ensure `REPLICATE_API_TOKEN` is set: `echo $REPLICATE_API_TOKEN`
 - Missing frames? Re-run `python3 main.py generate --step 30`
 - Atlas looks like a tall column? Increase `--max-width` (e.g., 2048) and re-run optimize/all.
+
+## 🙏 Credits
+
+- Face generation powered by [Replicate](https://replicate.com/)
+- Uses [fofr/expression-editor](https://replicate.com/fofr/expression-editor) model
+- Created with ❤️ by Open Source Fans
 
 ## License
 MIT - feel free to use in personal and commercial projects!
