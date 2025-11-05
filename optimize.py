@@ -31,22 +31,81 @@ def main():
 
     angles = list(range(0, 360, args.step))
 
-    frames = []
-    for a in angles:
-        p = OUT_DIR / f"{a}.jpg"
-        if p.exists():
-            frames.append(p)
-        else:
-            print(f"[warn] missing frame: {p}", file=sys.stderr)
+    # Discover frames grouped by prefix: <prefix>_<angle>.jpg
+    # e.g., my_face_0.jpg, my_face_30.jpg, my_face_cowboy_0.jpg, ...
+    groups = {}  # prefix -> list of (angle, Path)
+    for p in sorted(OUT_DIR.glob("*.jpg")):
+        name = p.stem  # e.g., my_face_0
+        if "_" not in name:
+            # Ignore legacy files like "0.jpg"
+            continue
+        try:
+            prefix, angle_str = name.rsplit("_", 1)
+            angle = int(angle_str)
+        except ValueError:
+            continue
+        if angle not in angles:
+            continue
+        groups.setdefault(prefix, {}).setdefault(angle, p)
 
-    if not frames:
-        print(f"ERROR: no frames found in {OUT_DIR.resolve()} for step={args.step}", file=sys.stderr)
+    if not groups:
+        print(f"ERROR: no prefixed frames found in {OUT_DIR.resolve()} (expected <prefix>_<angle>.jpg)", file=sys.stderr)
+        sys.exit(1)
+
+    # Determine ordering of sections (prefixes)
+    def section_sort_key(prefix: str):
+        # Prefer "my_face" first, then "my_face_*", then others alphabetically
+        if prefix == "my_face":
+            return (0, "")
+        if prefix.startswith("my_face_"):
+            return (1, prefix)
+        return (2, prefix)
+
+    ordered_prefixes = sorted(groups.keys(), key=section_sort_key)
+
+    # Build a flat list of frames in section order, and capture per-section indices
+    flat_paths = []
+    sections = []  # { name, startIndex, frameCount }
+
+    # Determine a base frame for size
+    first_path = None
+    for pr in ordered_prefixes:
+        for a in angles:
+            if a in groups[pr]:
+                first_path = groups[pr][a]
+                break
+        if first_path:
+            break
+    if first_path is None:
+        print("ERROR: could not determine a base frame for sizing", file=sys.stderr)
+        sys.exit(1)
+    base_w, base_h = load_frame(first_path).size
+
+    # For each section, collect frames in angle order
+    for prefix in ordered_prefixes:
+        start_index = len(flat_paths)
+        count = 0
+        for a in angles:
+            path = groups[prefix].get(a)
+            if path is None:
+                print(f"[warn] missing frame for section '{prefix}' angle {a}", file=sys.stderr)
+                continue
+            flat_paths.append(path)
+            count += 1
+        if count > 0:
+            sections.append({
+                "name": prefix,
+                "startIndex": start_index,
+                "frameCount": count,
+            })
+
+    if not flat_paths:
+        print(f"ERROR: no frames found to pack after grouping", file=sys.stderr)
         sys.exit(1)
 
     # Load frames and normalize to consistent size (based on the first frame),
     # then optionally downscale to respect per-frame width if needed to fit max atlas width.
-    imgs = [load_frame(p) for p in frames]
-    base_w, base_h = imgs[0].size
+    imgs = [load_frame(p) for p in flat_paths]
     normalized = []
     for im in imgs:
         if im.size != (base_w, base_h):
@@ -97,6 +156,14 @@ def main():
     dest = VIEWER_DIR / SPRITE_NAME
     sprite.save(dest, format="JPEG", quality=90, optimize=True)
 
+    # Add display names derived from prefix for convenience in the viewer
+    def display_name(prefix: str) -> str:
+        if prefix == "my_face":
+            return "default"
+        if prefix.startswith("my_face_"):
+            return prefix[len("my_face_"):]
+        return prefix
+
     manifest = {
         "step": args.step,
         "frameCount": frame_count,
@@ -105,6 +172,10 @@ def main():
         "columns": columns,
         "rows": rows,
         "image": SPRITE_NAME,
+        "sections": [
+            {"name": s["name"], "displayName": display_name(s["name"]), "startIndex": s["startIndex"], "frameCount": s["frameCount"]}
+            for s in sections
+        ],
     }
     (VIEWER_DIR / MANIFEST_NAME).write_text(json.dumps(manifest), encoding="utf-8")
 
