@@ -49,9 +49,13 @@ python3 main.py generate --step 30
 ```
 
 ### 2) Build optimized atlas (tiled)
-Packs all generated frames into one atlas (default max width 256px; raise this for bigger atlases like 2048). The manifest includes sections for each input (prefix):
+Packs all generated frames into one atlas. You can:
+- limit the overall atlas width with `--max-width` (default 256)
+- scale each tile (frame) with `--tile-width` (e.g., 128 to make each tile 128px wide; height is scaled proportionally)
+The manifest includes sections for each input (prefix):
 ```bash
-python3 main.py optimize --step 30 --max-width 2048
+# overall width cap and per-tile scaling
+python3 main.py optimize --step 30 --max-width 2048 --tile-width 128
 ```
 
 This writes to `viewer/`:

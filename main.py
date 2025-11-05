@@ -107,10 +107,12 @@ def generate_frames(step: int):
 
     print(f"Done. Files in: {OUT_DIR.resolve()}")
 
-def run_optimize(step: int, max_width: int):
+def run_optimize(step: int, max_width: int, tile_width: int | None = None):
     # Delegate to optimize.py to keep logic there
     optimize_path = (Path(__file__).parent / "optimize.py").resolve()
     cmd = [sys.executable, str(optimize_path), "--step", str(step), "--max-width", str(max_width)]
+    if tile_width is not None:
+        cmd += ["--tile-width", str(tile_width)]
     print(f"[run] {' '.join(cmd)}")
     try:
         subprocess.check_call(cmd)
@@ -128,20 +130,22 @@ def main():
     p_opt = sub.add_parser("optimize", help="Build tiled atlas (delegates to optimize.py)")
     p_opt.add_argument("--step", type=int, default=30, help="Grad-Schrittweite (1–360, Standard 30)")
     p_opt.add_argument("--max-width", type=int, default=256, help="Maximale Atlasbreite in Pixel (Standard 256)")
+    p_opt.add_argument("--tile-width", type=int, default=None, help="Maximale Breite pro Kachel/Frame (skaliert herunter, wenn gesetzt)")
 
     p_all = sub.add_parser("all", help="Generate frames and then optimize into atlas")
     p_all.add_argument("--step", type=int, default=30, help="Grad-Schrittweite (1–360, Standard 30)")
     p_all.add_argument("--max-width", type=int, default=256, help="Maximale Atlasbreite in Pixel (Standard 256)")
+    p_all.add_argument("--tile-width", type=int, default=None, help="Maximale Breite pro Kachel/Frame (skaliert herunter, wenn gesetzt)")
 
     args = parser.parse_args()
 
     if args.command == "generate":
         generate_frames(step=args.step)
     elif args.command == "optimize":
-        run_optimize(step=args.step, max_width=args.__dict__["max_width"])
+        run_optimize(step=args.step, max_width=args.__dict__["max_width"], tile_width=args.__dict__.get("tile_width"))
     elif args.command == "all":
         generate_frames(step=args.step)
-        run_optimize(step=args.step, max_width=args.__dict__["max_width"])
+        run_optimize(step=args.step, max_width=args.__dict__["max_width"], tile_width=args.__dict__.get("tile_width"))
     else:
         parser.error("Unknown command")
 

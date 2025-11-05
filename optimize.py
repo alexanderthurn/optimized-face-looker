@@ -20,6 +20,7 @@ def main():
     parser = argparse.ArgumentParser(description="Create tiled atlas from out/*.jpg frames and a manifest for the viewer.")
     parser.add_argument("--step", type=int, default=30, help="Angle step width (1–360). Must match generated frames.")
     parser.add_argument("--max-width", type=int, default=256, help="Maximum atlas width in pixels. Frames are downscaled if needed to fit. Default 256.")
+    parser.add_argument("--tile-width", type=int, default=None, help="Maximum width per tile/frame. If set, frames are downscaled to this width (keeping aspect).")
     args = parser.parse_args()
 
     if args.step <= 0 or args.step > 360:
@@ -27,6 +28,9 @@ def main():
         sys.exit(1)
     if args.max_width <= 0:
         print("ERROR: --max-width must be > 0", file=sys.stderr)
+        sys.exit(1)
+    if args.tile_width is not None and args.tile_width <= 0:
+        print("ERROR: --tile-width must be > 0", file=sys.stderr)
         sys.exit(1)
 
     angles = list(range(0, 360, args.step))
@@ -112,14 +116,19 @@ def main():
             im = im.resize((base_w, base_h), Image.LANCZOS)
         normalized.append(im)
 
-    # Determine target per-frame dimensions to satisfy max atlas width.
-    # Start with original base size; downscale if a single frame is already wider than max_width.
-    if base_w > args.max_width:
-        target_w = args.max_width
-        target_h = int(round(base_h * (target_w / base_w)))
+    # Determine target per-frame dimensions.
+    # If --tile-width was provided, downscale frames to that width (keeping aspect).
+    # Otherwise, leave original size unless a single frame would exceed atlas max-width by itself.
+    target_w = base_w
+    target_h = base_h
+    if args.tile_width is not None:
+        if base_w > args.tile_width:
+            target_w = args.tile_width
+            target_h = int(round(base_h * (target_w / base_w)))
     else:
-        target_w = base_w
-        target_h = base_h
+        if base_w > args.max_width:
+            target_w = args.max_width
+            target_h = int(round(base_h * (target_w / base_w)))
 
     # Choose columns to make atlas roughly square, then clamp to max_width
     # Target: columns^2 ≈ frame_count * (frame_height / frame_width)
