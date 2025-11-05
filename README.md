@@ -42,20 +42,21 @@ Put your input image at `in/my_face.jpg` (512×512 recommended).
 ## Usage
 
 ### 1) Generate frames
+Generates frames for every image in `in/` (`.jpg/.jpeg/.png`). Each input creates prefixed frames like `my_face_0.jpg`, `my_face_30.jpg`, …
 Default step is 30 degrees (0..330):
 ```bash
 python3 main.py generate --step 30
 ```
 
 ### 2) Build optimized atlas (tiled)
-Packs frames into a near-square atlas (default max width 256px; raise this for bigger atlases like 2048):
+Packs all generated frames into one atlas (default max width 256px; raise this for bigger atlases like 2048). The manifest includes sections for each input (prefix):
 ```bash
 python3 main.py optimize --step 30 --max-width 2048
 ```
 
 This writes to `viewer/`:
 - `anim-face.jpg` — the tiled atlas
-- `anim-face.json` — manifest with layout (columns, rows, frame size)
+- `anim-face.json` — manifest with layout (columns, rows, frame size) and `sections` (e.g., `default`, `cowboy`, `hippie`)
 
 ### 3) Do both in one step
 ```bash
@@ -74,19 +75,24 @@ python3 -m http.server 8000
 
 ### Controls and mapping
 - Move the mouse (or drag your finger) anywhere on the page; the face rotates to the nearest available frame.
+- Double-click (desktop) or double-tap (mobile) to switch expression/section (wraps around).
 - Angle convention: 0°=right, 90°=up, 180°=left, 270°=down.
 
 ### Defaults
 - Generation step: `30` degrees (frames at 0,30,60,…,330)
 - Atlas max width: `256` px (use a larger value for a more square atlas)
-- Outputs: frames in `out/`, optimized atlas and manifest in `viewer/`.
+- Outputs: frames in `out/` as `<prefix>_<angle>.jpg` (e.g., `my_face_0.jpg`), optimized atlas and manifest in `viewer/`.
 
 ## Project structure
 ```
 in/
   my_face.jpg
+  my_face_cowboy.jpg
+  my_face_hippie.jpg
 out/
-  0.jpg, 30.jpg, ... 330.jpg
+  my_face_0.jpg, my_face_30.jpg, ... 330.jpg
+  my_face_cowboy_0.jpg, ...
+  my_face_hippie_0.jpg, ...
 viewer/
   index.html
   anim-face.jpg
